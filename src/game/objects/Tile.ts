@@ -1,4 +1,5 @@
-import { GameObjects } from "phaser";
+import { GameObjects, Physics } from "phaser";
+import { EventBus } from "../EventBus";
 
 const letterScoreDict: Record<string, number> = Object.freeze({
     a: 1,
@@ -29,6 +30,8 @@ const letterScoreDict: Record<string, number> = Object.freeze({
     z: 10,
 });
 
+const tileSize = 64;
+
 export class Tile extends GameObjects.Container {
     letter: string;
     scoreMultiplier: number;
@@ -41,10 +44,17 @@ export class Tile extends GameObjects.Container {
         scoreMultiplier = 1,
     ) {
         super(scene, position.x, position.y, [
-            new GameObjects.Rectangle(scene, 0, 0, 64, 64, 0x00ff00),
-            new GameObjects.Text(scene, -16, -32, letter, {
-                fontFamily: "Times New Roman",
-                fontSize: 50,
+            new GameObjects.Rectangle(
+                scene,
+                0,
+                0,
+                tileSize,
+                tileSize,
+                0xf5ad42,
+            ),
+            new GameObjects.Text(scene, -16, -28, letter.toUpperCase(), {
+                fontFamily: "Consolas",
+                fontSize: 48,
                 color: "#ffffff",
                 stroke: "#000000",
                 strokeThickness: 6,
@@ -53,7 +63,21 @@ export class Tile extends GameObjects.Container {
         this.letter = letter;
         this.scoreMultiplier = scoreMultiplier;
         this.score = letterScoreDict[letter];
-        scene.add.existing(this);
+
+        this.scene.add.existing(this);
+        this.scene.physics.add.existing(this);
+        if (this.body instanceof Physics.Arcade.Body) {
+            this.body.pushable = false;
+            this.body.setVelocityY(500);
+        }
+
+        this.setSize(tileSize, tileSize);
+        this.setInteractive();
+
+        this.on("pointerdown", () => {
+            this.destroy();
+            EventBus.emit("tile-removed", this);
+        });
     }
 
     addedToScene() {
@@ -62,6 +86,12 @@ export class Tile extends GameObjects.Container {
 
     removedFromScene() {
         super.removedFromScene();
+    }
+
+    fall() {
+        if (this.body instanceof Physics.Arcade.Body) {
+            this.body.setVelocityY(500);
+        }
     }
 }
 
