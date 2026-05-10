@@ -7,7 +7,6 @@ const gridColor = 0xfca103;
 const outlineColor = 0xcc8202;
 export class Board extends GameObjects.Container {
     floors: Physics.Arcade.StaticGroup;
-    spawners: GameObjects.Ellipse[];
     board: Tile[][] = [[], [], [], [], [], [], []];
 
     addBoardGrid(scene: Phaser.Scene) {
@@ -45,9 +44,7 @@ export class Board extends GameObjects.Container {
     addSpawner(scene: Phaser.Scene) {
         let xPos = 0;
         let yPos = -this.getBounds().height / 2;
-        console.log(this.getBounds());
         let width = this.getBounds().width / 7;
-        this.spawners = [];
         for (let i = 0; i < 7; i += 1) {
             let spawner = new GameObjects.Ellipse(
                 scene,
@@ -63,7 +60,6 @@ export class Board extends GameObjects.Container {
                     String.fromCharCode(Math.RND.integerInRange(65, 90)),
                 );
             });
-            this.spawners.push(spawner);
             this.add(spawner);
             xPos += width;
         }

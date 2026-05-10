@@ -79,6 +79,22 @@ export class Tile extends GameObjects.Container {
             this.destroy();
             EventBus.emit("tile-removed", this);
         });
+
+        this.on("pointerover", () => {
+            const adjacentTiles = this.getAdjacentTiles();
+            for (const tile of adjacentTiles) {
+                // debugging needs
+                tile.setTileColor(0x000000);
+            }
+        });
+
+        this.on("pointerout", () => {
+            const adjacentTiles = this.getAdjacentTiles();
+            for (const tile of adjacentTiles) {
+                // debugging needs
+                tile.setTileColor(0xf5ad42);
+            }
+        });
     }
 
     addedToScene() {
@@ -92,6 +108,28 @@ export class Tile extends GameObjects.Container {
     fall() {
         if (this.body instanceof Physics.Arcade.Body) {
             this.body.setVelocityY(fallSpeed);
+        }
+    }
+
+    getAdjacentTiles(): Tile[] {
+        const bodies = this.scene.physics
+            .overlapCirc(
+                this.getBounds().centerX,
+                this.getBounds().centerY,
+                tileSize,
+                true,
+                false,
+            )
+            .filter((body) => body.gameObject != this);
+        return bodies.map((body) => body.gameObject as Tile);
+    }
+
+    setTileColor(color: number) {
+        const tileBase = this.list.find(
+            (child) => child instanceof GameObjects.Rectangle,
+        );
+        if (tileBase) {
+            tileBase.setFillStyle(color);
         }
     }
 }
