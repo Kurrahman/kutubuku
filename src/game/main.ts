@@ -17,7 +17,7 @@ const config: Phaser.Types.Core.GameConfig = {
     physics: {
         default: "arcade",
         arcade: {
-            overlapBias: 10,
+            overlapBias: 64,
             debug: true,
         },
     },

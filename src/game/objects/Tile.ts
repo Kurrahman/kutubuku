@@ -31,6 +31,7 @@ const letterScoreDict: Record<string, number> = Object.freeze({
 });
 
 const tileSize = 64;
+const fallSpeed = 1000;
 
 export class Tile extends GameObjects.Container {
     letter: string;
@@ -68,7 +69,7 @@ export class Tile extends GameObjects.Container {
         this.scene.physics.add.existing(this);
         if (this.body instanceof Physics.Arcade.Body) {
             this.body.pushable = false;
-            this.body.setVelocityY(500);
+            this.body.setVelocityY(fallSpeed);
         }
 
         this.setSize(tileSize, tileSize);
@@ -90,7 +91,7 @@ export class Tile extends GameObjects.Container {
 
     fall() {
         if (this.body instanceof Physics.Arcade.Body) {
-            this.body.setVelocityY(500);
+            this.body.setVelocityY(fallSpeed);
         }
     }
 }
