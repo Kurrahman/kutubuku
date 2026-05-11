@@ -15,9 +15,10 @@ const config: Phaser.Types.Core.GameConfig = {
     backgroundColor: "#028af8",
     scene: [Boot, Preloader, MainMenu, MainGame, GameOver],
     physics: {
-        default: "arcade",
-        arcade: {
-            overlapBias: 64,
+        default: "matter",
+        matter: {
+            positionIterations: 10,
+            velocityIterations: 10,
             debug: true,
         },
     },

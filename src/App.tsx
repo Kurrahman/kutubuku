@@ -20,13 +20,13 @@ function App() {
         }
     };
 
-    const addTile = () => {
+    const initBoard = () => {
         if (phaserRef.current) {
             const scene = phaserRef.current.scene as MainMenu;
 
             if (scene && scene.scene.key === "MainMenu") {
                 // Get the update logo position
-                scene.dropNewTile(0);
+                console.log("haom");
             }
         }
     };
@@ -50,8 +50,8 @@ function App() {
                     <pre>{`{\n  x: ${spritePosition.x}\n  y: ${spritePosition.y}\n}`}</pre>
                 </div>
                 <div>
-                    <button className="button" onClick={addTile}>
-                        Add New Tile
+                    <button className="button" onClick={initBoard}>
+                        Generate Board
                     </button>
                 </div>
             </div>
