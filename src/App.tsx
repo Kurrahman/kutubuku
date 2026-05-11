@@ -4,11 +4,11 @@ import { MainMenu } from "./game/scenes/MainMenu";
 
 function App() {
     // The sprite can only be moved in the MainMenu Scene
-    const [canMoveSprite, setCanMoveSprite] = useState(true);
+    const [_, setCanMoveSprite] = useState(true);
 
     //  References to the PhaserGame component (game and scene are exposed)
     const phaserRef = useRef<IRefPhaserGame | null>(null);
-    const [spritePosition, setSpritePosition] = useState({ x: 0, y: 0 });
+    const [spritePosition, __] = useState({ x: 0, y: 0 });
 
     const changeScene = () => {
         if (phaserRef.current) {
@@ -26,7 +26,7 @@ function App() {
 
             if (scene && scene.scene.key === "MainMenu") {
                 // Get the update logo position
-                console.log("haom");
+                scene.checkTiles();
             }
         }
     };

@@ -99,6 +99,7 @@ export class Tile extends GameObjects.Container {
 
     assignLetter() {
         this.letter = this.generateRandomLetter();
+        this.score = letterScoreDict[this.letter];
         this.add(
             new GameObjects.Text(this.scene, -16, -28, this.letter, {
                 fontFamily: "Consolas",

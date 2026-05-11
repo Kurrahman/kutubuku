@@ -1,6 +1,4 @@
 import { GameObjects, Physics } from "phaser";
-import { EventBus } from "../EventBus";
-import { Tile } from "./Tile";
 import { Game } from "../constants/game";
 
 export class Board extends GameObjects.Container {

@@ -56,13 +56,6 @@ export class MainMenu extends Scene {
                 isSensor: true,
                 isStatic: true,
             });
-
-            // this.matter.world.on("collisionend", (event, bodyA, bodyB) => {
-            //     console.log(event, bodyA, bodyB);
-            //     if (this.flag) return;
-            //     this.spawnTile({ x: posX, y: posY });
-            //     this.flag = true;
-            // });
         }
     }
 
@@ -98,7 +91,7 @@ export class MainMenu extends Scene {
             restitution: 0,
             friction: 0,
             bounce: 0,
-            density: 999,
+            mass: 1,
         });
     }
 
@@ -118,8 +111,22 @@ export class MainMenu extends Scene {
         });
     }
 
+    update() {
+        for (const spawner of this.spawners) {
+            if (spawner.hasEmptySpot()) {
+                EventBus.emit("tile-added", spawner.position);
+            }
+        }
+    }
+
     changeScene() {
         this.scene.start("Game");
+    }
+
+    checkTiles() {
+        console.log(
+            this.matter.world.getAllBodies().filter((body) => !body.isStatic),
+        );
     }
 }
 
