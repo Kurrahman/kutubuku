@@ -37,6 +37,7 @@ export class Tile extends GameObjects.Container {
     letter: string = "";
     scoreMultiplier: number;
     score: number;
+    selected: boolean = false;
 
     constructor(
         scene: Phaser.Scene,
@@ -51,7 +52,7 @@ export class Tile extends GameObjects.Container {
                 tileSize,
                 tileSize,
                 0xf5ad42,
-            ),
+            ).setStrokeStyle(2, 0x000000),
         ]);
         this.assignLetter();
         this.scoreMultiplier = scoreMultiplier;
@@ -62,23 +63,10 @@ export class Tile extends GameObjects.Container {
         this.setInteractive();
 
         this.on("pointerdown", () => {
-            this.destroy();
-            EventBus.emit("tile-removed", this);
-        });
-
-        this.on("pointerover", () => {
-            const adjacentTiles = this.getAdjacentTiles();
-            for (const tile of adjacentTiles) {
-                // debugging needs
-                tile.setTileColor(0x000000);
-            }
-        });
-
-        this.on("pointerout", () => {
-            const adjacentTiles = this.getAdjacentTiles();
-            for (const tile of adjacentTiles) {
-                // debugging needs
-                tile.setTileColor(0xf5ad42);
+            if (this.selected) {
+                EventBus.emit("tile-unselected", this);
+            } else {
+                EventBus.emit("tile-selected", this);
             }
         });
     }
@@ -136,6 +124,11 @@ export class Tile extends GameObjects.Container {
         if (tileBase) {
             tileBase.setFillStyle(color);
         }
+    }
+
+    setSelected(selected: boolean) {
+        this.selected = selected;
+        this.setTileColor(selected ? 0x00ff00 : 0xf5ad42);
     }
 }
 

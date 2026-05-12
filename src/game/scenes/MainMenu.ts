@@ -7,13 +7,17 @@ import { Spawner } from "../objects/Spawner";
 import { Game } from "../constants/game";
 import { Floor } from "../objects/Floor";
 import { Tile } from "../objects/Tile";
+import { WordDisplay } from "../objects/WordDisplay";
 export class MainMenu extends Scene {
     background: GameObjects.Image;
     title: GameObjects.Text;
+    wordDisplay: WordDisplay;
     board: Board;
     spawners: Spawner[];
     floors: Floor[];
     flag: boolean = false;
+    selectedTiles: Tile[] = [];
+    selectedWord: string = "";
 
     constructor() {
         super("MainMenu");
@@ -32,6 +36,8 @@ export class MainMenu extends Scene {
             })
             .setOrigin(0.5)
             .setDepth(100);
+        this.wordDisplay = new WordDisplay(this, { x: 200, y: 250 });
+        this.add.existing(this.wordDisplay);
     }
 
     placeSpawners(position: { x: number; y: number }) {
@@ -109,6 +115,14 @@ export class MainMenu extends Scene {
         EventBus.on("tile-added", (position: { x: number; y: number }) => {
             this.spawnTile(position);
         });
+
+        EventBus.on("tile-selected", (tile: Tile) => {
+            this.selectTiles(tile);
+        });
+
+        EventBus.on("tile-unselected", (tile: Tile) => {
+            this.unselectTiles(tile);
+        });
     }
 
     update() {
@@ -127,6 +141,37 @@ export class MainMenu extends Scene {
         console.log(
             this.matter.world.getAllBodies().filter((body) => !body.isStatic),
         );
+    }
+
+    selectTiles(tile: Tile) {
+        if (this.selectedTiles.length === 0) {
+            this.selectedTiles.push(tile);
+            tile.setSelected(true);
+            this.wordDisplay.setWordFromTiles(this.selectedTiles);
+            return;
+        }
+        const lastSelectedTile =
+            this.selectedTiles[this.selectedTiles.length - 1];
+        const validTiles = lastSelectedTile
+            .getAdjacentTiles()
+            .filter((at) => !at.selected);
+        if (validTiles.includes(tile)) {
+            this.selectedTiles.push(tile);
+            tile.setSelected(true);
+            this.wordDisplay.setWordFromTiles(this.selectedTiles);
+        }
+    }
+
+    unselectTiles(tile: Tile) {
+        let index = this.selectedTiles.indexOf(tile);
+        if (index !== -1) {
+            if (index < this.selectedTiles.length - 1) index += 1;
+            const removedTile = this.selectedTiles.splice(index);
+            for (const rt of removedTile) {
+                rt.setSelected(false);
+            }
+            this.wordDisplay.setWordFromTiles(this.selectedTiles);
+        }
     }
 }
 
