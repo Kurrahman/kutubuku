@@ -18,11 +18,21 @@ export abstract class Dictionary {
     }
 
     static getDict(key: string): number | undefined {
-        return Dictionary._dict.get(key) || -1;
+        if (Dictionary._dict.has(key)) {
+            return Dictionary._dict.get(key);
+        }
+        return -1;
     }
 
     static setDict(key: string, value: number): void {
         Dictionary._dict.set(key, value);
+    }
+
+    static playWord(word: string): void {
+        const score = Dictionary.getDict(word);
+        if (score) {
+            Dictionary.setDict(word, score + 1);
+        }
     }
 
     static getLetterDistribution(key: string): number | undefined {

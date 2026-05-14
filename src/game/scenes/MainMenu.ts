@@ -9,16 +9,17 @@ import { Floor } from "../objects/Floor";
 import { Tile } from "../objects/Tile";
 import { WordDisplay } from "../objects/WordDisplay";
 import { Dictionary } from "../Dictionary";
+import { ScoreDisplay } from "../objects/ScoreDisplay";
 export class MainMenu extends Scene {
     background: GameObjects.Image;
     title: GameObjects.Text;
+    score: ScoreDisplay;
     wordDisplay: WordDisplay;
     board: Board;
     spawners: Spawner[];
     floors: Floor[];
     flag: boolean = false;
     selectedTiles: Tile[] = [];
-    selectedWord: string = "";
 
     constructor() {
         super("MainMenu");
@@ -39,8 +40,10 @@ export class MainMenu extends Scene {
             })
             .setOrigin(0.5)
             .setDepth(100);
+        this.score = new ScoreDisplay(this, { x: 200, y: 150 }, 0);
         this.wordDisplay = new WordDisplay(this, { x: 200, y: 250 });
         this.add.existing(this.wordDisplay);
+        this.add.existing(this.score);
     }
 
     placeSpawners(position: { x: number; y: number }) {
@@ -124,7 +127,24 @@ export class MainMenu extends Scene {
         });
 
         EventBus.on("tile-unselected", (tile: Tile) => {
-            this.unselectTiles(tile);
+            if (Dictionary.getDict(this.wordDisplay.text.text) != -1) {
+                Dictionary.playWord(this.wordDisplay.text.text);
+                EventBus.emit(
+                    "word-submitted",
+                    this.calculateWordScore(this.selectedTiles),
+                );
+                for (const tile of this.selectedTiles) {
+                    tile.destroy();
+                    this.selectedTiles = [];
+                    this.wordDisplay.setWordFromTiles(this.selectedTiles);
+                }
+            } else {
+                this.unselectTiles(tile);
+            }
+        });
+
+        EventBus.on("word-changed", (tiles: Tile[]) => {
+            this.wordDisplay.setWordScore(this.calculateWordScore(tiles));
         });
     }
 
@@ -175,6 +195,18 @@ export class MainMenu extends Scene {
             }
             this.wordDisplay.setWordFromTiles(this.selectedTiles);
         }
+    }
+
+    calculateWordScore(tiles: Tile[]): number {
+        let multiplier = 0;
+        const letterScore = tiles
+            .map((tile) => tile.score)
+            .reduce((a, b) => a + b, 0);
+        if (tiles.length < 3) return 0;
+        if (tiles.length >= 3 && tiles.length <= 4) multiplier = 1;
+        else if (tiles.length >= 5 && tiles.length <= 6) multiplier = 1.5;
+        else if (tiles.length >= 7) multiplier = 2;
+        return letterScore * multiplier;
     }
 }
 
