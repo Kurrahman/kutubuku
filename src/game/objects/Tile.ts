@@ -1,5 +1,6 @@
 import { GameObjects, Math } from "phaser";
 import { EventBus } from "../EventBus";
+import { Dictionary } from "../Dictionary";
 
 const letterScoreDict: Record<string, number> = Object.freeze({
     a: 1,
@@ -31,9 +32,9 @@ const letterScoreDict: Record<string, number> = Object.freeze({
 });
 
 const tileSize = 64;
-const fallSpeed = 1000;
 
 export class Tile extends GameObjects.Container {
+    static letterBucket: string[] = [];
     letter: string = "";
     scoreMultiplier: number;
     score: number;
@@ -54,6 +55,7 @@ export class Tile extends GameObjects.Container {
                 0xf5ad42,
             ).setStrokeStyle(2, 0x000000),
         ]);
+        if (Tile.letterBucket.length < 1) Tile.prepareLookup();
         this.assignLetter();
         this.scoreMultiplier = scoreMultiplier;
 
@@ -71,6 +73,20 @@ export class Tile extends GameObjects.Container {
         });
     }
 
+    static prepareLookup() {
+        for (let i = 97; i <= 122; i++) {
+            const weight = Dictionary.getLetterDistribution(
+                String.fromCharCode(i),
+            );
+            console.log(String.fromCharCode(i), weight);
+            if (weight) {
+                for (let j = 0; j < weight; j++) {
+                    Tile.letterBucket.push(String.fromCharCode(i));
+                }
+            }
+        }
+    }
+
     addedToScene() {
         super.addedToScene();
     }
@@ -80,9 +96,7 @@ export class Tile extends GameObjects.Container {
     }
 
     generateRandomLetter(): string {
-        return String.fromCharCode(
-            Math.RND.integerInRange(65, 90),
-        ).toUpperCase();
+        return Math.RND.pick(Tile.letterBucket);
     }
 
     assignLetter() {

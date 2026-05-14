@@ -8,6 +8,7 @@ import { Game } from "../constants/game";
 import { Floor } from "../objects/Floor";
 import { Tile } from "../objects/Tile";
 import { WordDisplay } from "../objects/WordDisplay";
+import { Dictionary } from "../Dictionary";
 export class MainMenu extends Scene {
     background: GameObjects.Image;
     title: GameObjects.Text;
@@ -21,6 +22,8 @@ export class MainMenu extends Scene {
 
     constructor() {
         super("MainMenu");
+        Dictionary.load_dict();
+        Dictionary.load_letter_dist();
     }
 
     setUpScene() {
