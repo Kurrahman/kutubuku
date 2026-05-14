@@ -78,7 +78,6 @@ export class Tile extends GameObjects.Container {
             const weight = Dictionary.getLetterDistribution(
                 String.fromCharCode(i),
             );
-            console.log(String.fromCharCode(i), weight);
             if (weight) {
                 for (let j = 0; j < weight; j++) {
                     Tile.letterBucket.push(String.fromCharCode(i));
