@@ -127,7 +127,11 @@ export class MainMenu extends Scene {
         });
 
         EventBus.on("tile-unselected", (tile: Tile) => {
-            if (Dictionary.getDict(this.wordDisplay.text.text) != -1) {
+            if (
+                this.selectedTiles.indexOf(tile) ===
+                    this.selectedTiles.length - 1 &&
+                Dictionary.getDict(this.wordDisplay.text.text) != -1
+            ) {
                 Dictionary.playWord(this.wordDisplay.text.text);
                 EventBus.emit(
                     "word-submitted",

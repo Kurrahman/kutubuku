@@ -37,6 +37,10 @@ export class Tile extends GameObjects.Container {
         this.setInteractive();
 
         this.on("pointerdown", () => {
+            if (this.body?.velocity.y && this.body.velocity.y > 0.1) {
+                // ignore inputs on moving tiles
+                return;
+            }
             if (this.selected) {
                 EventBus.emit("tile-unselected", this);
             } else {
